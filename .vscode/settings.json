@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "ranges": "c",
+        "span": "c",
+        "type_traits": "c"
+    }
+}
