@@ -78,6 +78,18 @@ tuple createElement(aluno *first,aluno *last, char matPrev[10], alInfo info){
         return a;
     }
 
+    if (strcmp(first->al.matricula,matPrev) == 0 && first->next != NULL){
+        aux = first->next;
+        l->next = aux;
+        l->prev = first;
+        aux->prev = l;
+        first->next = l;
+
+        a.first = first;
+        a.last = last; 
+        return a; 
+    }
+
     if (strcmp(last->al.matricula, matPrev) == 0){
         last->next = l;
         l->prev = last;
@@ -88,7 +100,7 @@ tuple createElement(aluno *first,aluno *last, char matPrev[10], alInfo info){
         return a;
     }
 
-    for (prev = first;prev == NULL; prev = prev->next){
+    for (prev = first;prev->next != NULL; prev = prev->next){
         if (strcmp(prev->al.matricula,matPrev) == 0){
             aux = prev->next;
             l->next = aux;
