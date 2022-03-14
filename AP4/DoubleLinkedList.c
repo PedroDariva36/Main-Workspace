@@ -6,15 +6,13 @@ typedef struct Aluno aluno;
 typedef struct AlInfo alInfo;
 typedef struct Tuple tuple;
 
-
 typedef struct {
- int dia;
- int mes;
- int ano;
+    int dia;
+    int mes;
+    int ano;
 } Date;
 
-struct AlInfo
-{
+struct AlInfo{
     char matricula[10];
     char nome[40];
     Date nacimento;
@@ -26,42 +24,13 @@ struct Aluno{
     aluno *next;
     aluno *prev;
 };
-
-struct Tuple
-{
+struct Tuple{
     aluno *first;
     aluno *last;
 };
 
-int doesExist(aluno *first, char matPrev[10]){
-    if (first == NULL){
-        return 0;
-    }
-    
-    for (aluno *aux = first; aux != NULL; aux = aux->next)
-        if (strcmp(aux->al.matricula, matPrev))
-            return 1;
-    
-    return 0;
-
-}
-
-int countList(aluno *first){
-    if (first == NULL)
-        return 0;
-    aluno *aux = first;
-    int i = 1;
-    while (aux != NULL && aux->next != NULL){
-        aux = aux->next;
-        i++;
-    }
-    return i;
-}
-
-tuple createElement(aluno *first,aluno *last, char matPrev[10], alInfo info){
+tuple createElement(tuple a, char matPrev[10], alInfo info){
     aluno *l, *aux, *prev = NULL;
-    tuple a;
-
     l = (aluno*) malloc(sizeof(aluno));
     strcpy(l->al.matricula, info.matricula);
     strcpy(l->al.nome, info.nome);
@@ -72,94 +41,74 @@ tuple createElement(aluno *first,aluno *last, char matPrev[10], alInfo info){
     l->next = NULL;
     l->prev = NULL;
 
-    if (first == NULL){
+    if (a.first == NULL){
         a.first = l;
         a.last = l;
         return a;
     }
 
-    if (strcmp(first->al.matricula,matPrev) == 0 && first->next != NULL){
-        aux = first->next;
+    if (strcmp(a.first->al.matricula,matPrev) == 0 && a.first->next != NULL){
+        aux = a.first->next;
         l->next = aux;
-        l->prev = first;
+        l->prev = a.first;
         aux->prev = l;
-        first->next = l;
-
-        a.first = first;
-        a.last = last; 
+        a.first->next = l;
         return a; 
     }
 
-    if (strcmp(last->al.matricula, matPrev) == 0){
-        last->next = l;
-        l->prev = last;
-        last = l;
-
-        a.first = first;
-        a.last = l; 
+    if (strcmp(a.last->al.matricula, matPrev) == 0){
+        a.last->next = l;
+        l->prev = a.last;
+        a.last = l;
         return a;
     }
 
-    for (prev = first;prev->next != NULL; prev = prev->next){
+    for (prev = a.first;prev->next != NULL; prev = prev->next){
         if (strcmp(prev->al.matricula,matPrev) == 0){
             aux = prev->next;
             l->next = aux;
             l->prev = prev;
             aux->prev = l;
-            prev->next = l;
-
-            a.first = first;
-            a.last = last; 
+            prev->next = l; 
             return a; 
         }
     }
 
-    l->next = first;
-    first->prev = l;
-    first = l;
-
-    a.first = first;
-    a.last = last; 
+    l->next = a.first;
+    a.first->prev = l;
+    a.first = l;
     return a;
 }
 
-tuple deleteElement(aluno *first,aluno *last, char matricula[10]){
+tuple deleteElement(tuple a, char matricula[10]){
     aluno *aux, *l = NULL;
-    tuple a;
-    
-    if (first == NULL){
+    if (a.first == NULL){
         printf("Lista Vazia!\n");
-        a.first = first;
-        a.last = last;
         return a;
     }
 
-    if(strcmp(first->al.matricula,matricula) == 0){
-        if (first->next == NULL){
-            free(first);
+    if(strcmp(a.first->al.matricula,matricula) == 0){
+        if (a.first->next == NULL){
+            free(a.first);
             a.first = NULL;
             a.last = NULL;
             return a;
         }
         
-        aux = first;
-        first = first->next;
-        first->prev = NULL;
+        aux = a.first;
+        a.first = a.first->next;
+        a.first->prev = NULL;
         free(aux);
-        a.first = first;
-        a.last = last;
         return a;
     }
-    if(strcmp(last->al.matricula,matricula) == 0){
-        aux = last;
-        last = last->prev;
-        last->next = NULL;
+    if(strcmp(a.last->al.matricula,matricula) == 0){
+        aux = a.last;
+        a.last = a.last->prev;
+        a.last->next = NULL;
         free(aux);
-        a.first = first;
-        a.last = last;
         return a;
     }
-    for (l = first; l != NULL; l = l->next){
+    for (l = a.first; l != NULL; l = l->next){
         if(strcmp(l->al.matricula,matricula) == 0){
             aux = l;
             l = aux->prev;
@@ -167,27 +116,10 @@ tuple deleteElement(aluno *first,aluno *last, char matricula[10]){
             l = aux->next;
             l->prev = aux->prev;
             free(aux);
-            a.first = first;
-            a.last = last;
             return a;
         }
     }
-    
-    a.first = first;
-    a.last = last;
     return a;
-
-}
-
-
-
-aluno clearList(aluno *first){
-    aluno *p = first;
-    while (p != NULL){
-        aluno *aux = p->next;
-        free(p);
-        p = aux; 
-    }
 }
 
 void printByFirst(aluno *first){
@@ -196,9 +128,7 @@ void printByFirst(aluno *first){
         printf("Lista Vazia!\n");
         return;
     }
-
-    for (aux = first; aux != NULL; aux = aux->next)
-       printf("%s, %s, %d/%d/%d, %.2f\n", aux->al.matricula, aux->al.nome, aux->al.nacimento.dia, aux->al.nacimento.mes, aux->al.nacimento.ano, aux->al.nota);
+    for (aux = first; aux != NULL; aux = aux->next) printf("%s, %s, %d/%d/%d, %.2f\n", aux->al.matricula, aux->al.nome, aux->al.nacimento.dia, aux->al.nacimento.mes, aux->al.nacimento.ano, aux->al.nota);
 }
 
 void printByLast(aluno *last){
@@ -207,43 +137,59 @@ void printByLast(aluno *last){
         printf("Lista Vazia!\n");
         return;
     }
-
     for (aux = last; aux != NULL; aux = aux->prev)
        printf("%s, %s, %d/%d/%d, %.2f\n", aux->al.matricula, aux->al.nome, aux->al.nacimento.dia, aux->al.nacimento.mes, aux->al.nacimento.ano, aux->al.nota);
 }
 
+int countList(aluno *first){
+    if (first == NULL) return 0;
+    aluno *aux = first;
+    int i = 1;
+    while (aux != NULL && aux->next != NULL){
+        aux = aux->next;
+        i++;
+    }
+    return i;
+}
+
 int countForDelete(aluno *first,char matricula[10]){
-    if (first == NULL){
-        return 0;
-    }
-    for (aluno *aux = first; aux != NULL; aux = aux->next){
-        if (strcmp(aux->al.matricula, matricula)==0)
-            return 1;
-    }
+    if (first == NULL) return 0;
+    for (aluno *aux = first; aux != NULL; aux = aux->next)
+        if (strcmp(aux->al.matricula, matricula)==0) return 1;
     return 0;
 }
+
+void clearList(aluno *first){    
+    if (first == NULL) return;
+    aluno *p = first;
+    while (p != NULL){
+        aluno *aux = p->next;
+        free(p);
+        p = aux; 
+    }
+}
+
 int main(int argc, char const *argv[]){   
-    aluno *first = NULL; 
-    aluno *last = NULL; 
-    aluno *l = NULL;
-    
+    tuple a;
+    a.first = NULL;
+    a.last = NULL;
+
     while(1){
         int op;
         scanf("%d",&op);
         if (op == 0)
             break;
-        
+
         else{
             if (op == 1){
                 alInfo al;
                 char matriculaPrev[10];
-                float nota;
                 char dateChar[12];
                 int date[3];
+                float nota;
+
                 scanf("%s",matriculaPrev);
                 scanf("%s %s %s %f",al.matricula,al.nome,dateChar,&nota);
-                al.nota = nota;
-
 
                 int i = 0;
                 char *p = strtok (dateChar, "/");
@@ -255,38 +201,23 @@ int main(int argc, char const *argv[]){
                 al.nacimento.dia = date[0];
                 al.nacimento.mes = date[1];
                 al.nacimento.ano = date[2];
+                al.nota = nota;
 
-                tuple a = createElement(first,last,matriculaPrev,al);
-                first = a.first;
-                last = a.last;
+                a = createElement(a,matriculaPrev,al);
             }
-
             if (op == 2){
                 char matricula[10];
                 scanf("%s",matricula);
-                tuple a = deleteElement(first, last, matricula);
-                first = a.first;
-                last = a.last;
-                if (countForDelete(first,matricula) == 1){
-                    tuple a = deleteElement(first, last, matricula);
-                    first = a.first;
-                    last = a.last;
-                }
-
+                a = deleteElement(a, matricula);
+                while (countForDelete(a.first,matricula) == 1) a = deleteElement(a, matricula);
             }   
-
-            if (op == 3)
-                printByFirst(first);
-            
-            if (op == 4)
-                printByLast(last);
+            if (op == 3) printByFirst(a.first);
+            if (op == 4) printByLast(a.last);
         }   
     }
-    int amount = countList(first);
-    for (int i = 0; i < amount; i++)
+    for (int i = 0; i < countList(a.first); i++)
         printf("*");
-    printf("\n\n"); 
-    clearList(first);
-    first = NULL;
+    printf("\n\n");
+    clearList(a.first);
     return 0;
 }

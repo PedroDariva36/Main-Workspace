@@ -7,11 +7,8 @@ typedef struct Stack {
  struct stack *next;
 } stack;
 
-typedef struct {
- stack *top;
-} StackTop;
 
-void inserePilha(StackTop *stackTop, char node) {
+void inserePilha(stack *stackTop, char node) {
     stack *aux;
     aux = malloc(sizeof(stack));
     aux->node = node;
