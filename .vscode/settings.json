@@ -3,6 +3,10 @@
         "ranges": "c",
         "span": "c",
         "type_traits": "c",
-        "random": "c"
+        "random": "c",
+        "*.tcc": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "string_view": "c"
     }
 }
